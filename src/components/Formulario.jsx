@@ -1,7 +1,7 @@
-
-import {nanoid} from 'nanoid'
+import { specialCharMap } from '@testing-library/user-event/dist/keyboard';
 import React from 'react';
-//import { fire } from '../firebase';
+import { firebase } from '../firebaseconfi';
+
 
 export const Formulario = () => {
 
@@ -19,7 +19,26 @@ export const Formulario = () => {
     const [modoEdicion, setModoEdicion] = React.useState(false)
 
 
-    const AgregarEquipos = e => {
+    const obtenerDatos = async () => {
+      try{
+        const db = firebase.firestore();
+        const data = await db.collection('Equipos').get();
+        const arrayData = data.docs.map(doc => ({id: doc.id, ...doc.data()}))        
+        setEquipos(arrayData)
+        console.log(arrayData);
+  
+      }catch(error){
+        console.log(error)
+      }
+    }
+  
+    React.useEffect(()=>{
+      
+      obtenerDatos()
+  
+    }, [])
+
+    const AgregarEquipos =  async (e) => {
       e.preventDefault()
   
       if(!(MarcaTorre.trim() && ModeloTorre.trim() && MarcaMonitor.trim() && ModeloMonitor.trim() && 
@@ -27,7 +46,9 @@ export const Formulario = () => {
         setError('Favor validar que los campos no esten vacios')
         return
       }
-  
+
+      
+  /*
       setEquipos([
         ...Equipos,
         {id: nanoid(), MarcaTorre:MarcaTorre, ModeloTorre:ModeloTorre, MarcaMonitor:MarcaMonitor, ModeloMonitor:ModeloMonitor, MarcaMouse:MarcaMouse, ModeloMouse:ModeloMouse, MarcaTeclado:MarcaTeclado, ModeloTeclado:ModeloTeclado}
@@ -43,24 +64,55 @@ export const Formulario = () => {
       setModeloTeclado('')
       setId('')
       setError(null)
+      */
+
+      try{
+        const db = firebase.firestore();
+        const nuevoEquipo = {
+          MarcaTorre: MarcaTorre,
+          ModeloTorre: ModeloTorre,
+          MarcaMonitor: MarcaMonitor,
+          ModeloMonitor : ModeloMonitor,
+          MarcaMouse : MarcaMouse,
+          ModeloMouse : ModeloMouse,
+          MarcaTeclado : MarcaTeclado,
+          ModeloTeclado : ModeloTeclado
+        }
+ 
+        const data = await db.collection('Equipos').add(nuevoEquipo)
+ 
+        setEquipos([
+         ...Equipos,
+         {id: data.id, ...nuevoEquipo}
+       ])
+   
+       setMarcaTorre('')
+       setModeloTorre('')
+       setMarcaMonitor('')
+       setModeloMonitor('')
+       setMarcaMouse('')
+       setModeloMouse('')
+       setMarcaTeclado('')
+       setModeloTeclado('')
+       setError(null)
+ 
+     }catch(error){
+       console.log(error)
+     }
+      
     }
   
-    const EliminarEquipos = id => {
-      const arrayAux = Equipos.filter(item => item.id !== id)
-      setEquipos(arrayAux)
-
-      setModoEdicion(false)
-      setMarcaTorre('')
-      setModeloTorre('')
-      setMarcaMonitor('')
-      setModeloMonitor('')
-      setMarcaMouse('')
-      setModeloMouse('')
-      setMarcaTeclado('')
-      setModeloTeclado('')
-      setId('')
-      setError(null)
-
+    const EliminarEquipos = async(id) => {
+      try{
+        const db = firebase.firestore()
+        await db.collection('Equipos').doc(id).delete()
+        const arrayFiltrado = Equipos.filter(item => item.id !== id)
+        setEquipos(arrayFiltrado)
+  
+      }catch(error){
+        console.log(error)
+      }
+  
     }
   
     const editar = item =>{
@@ -91,7 +143,7 @@ export const Formulario = () => {
       setError(null)
     }
   
-    const editarEquipos = e =>{
+    const editarEquipos = async(e) =>{
       e.preventDefault()
       if(!(MarcaTorre.trim() && ModeloTorre.trim() && MarcaMonitor.trim() && ModeloMonitor.trim() && 
             MarcaMouse.trim() && ModeloMouse.trim() && MarcaTeclado.trim() && ModeloTeclado.trim() )){
@@ -100,22 +152,47 @@ export const Formulario = () => {
             return
         }
   
-      const arrayEditado = Equipos.map(
+
+        try{
+          const db = firebase.firestore()
+          await db.collection('Equipos').doc(id).update({
+            MarcaTorre: MarcaTorre,
+            ModeloTorre: ModeloTorre,
+            MarcaMonitor: MarcaMonitor,
+            ModeloMonitor : ModeloMonitor,
+            MarcaMouse : MarcaMouse,
+            ModeloMouse : ModeloMouse,
+            MarcaTeclado : MarcaTeclado,
+            ModeloTeclado : ModeloTeclado
+          })
+          //obtenerDatos()
+    
+          const arrayEditado = Equipos.map(
+            item => item.id === id ? {id:id, MarcaTorre:MarcaTorre, ModeloTorre:ModeloTorre, MarcaMonitor:MarcaMonitor, ModeloMonitor:ModeloMonitor, MarcaMouse:MarcaMouse, ModeloMouse:ModeloMouse, MarcaTeclado:MarcaTeclado, ModeloTeclado : ModeloTeclado} : item
+          )
+          
+          setEquipos(arrayEditado)
+          setMarcaTorre('')
+          setModeloTorre('')
+          setMarcaMonitor('')
+          setModeloMonitor('')
+          setMarcaMouse('')
+          setModeloMouse('')
+          setMarcaTeclado('')
+          setModeloTeclado('')
+          setId('')
+          setError(null)
+          setModoEdicion(false)
+    
+        }catch(error){
+          console.log(error)
+        }
+
+      /*const arrayEditado = Equipos.map(
         item => item.id=== id ? {id:id, MarcaTorre:MarcaTorre, ModeloTorre:ModeloTorre, MarcaMonitor:MarcaMonitor, ModeloMonitor:ModeloMonitor, MarcaMouse:MarcaMouse, ModeloMouse:ModeloMouse, MarcaTeclado:MarcaTeclado} : item
         )
-  
-        setEquipos(arrayEditado)
-        setMarcaTorre('')
-        setModeloTorre('')
-        setMarcaMonitor('')
-        setModeloMonitor('')
-        setMarcaMouse('')
-        setModeloMouse('')
-        setMarcaTeclado('')
-        setModeloTeclado('')
-        setId('')
-        setError(null)
-        setModoEdicion(false)
+        */
+       
     }
   
     return (
@@ -197,7 +274,7 @@ export const Formulario = () => {
                 (<>
                   <button
                   className="btn btn-warning btn-block" 
-                  type='submit'>Editar</button>
+                  type='submit'>Guardar</button>
                   <button
                   className="btn btn-dark btn-block mx-2" 
                   onClick ={() => cancelar()}>Cancelar</button>
@@ -217,7 +294,7 @@ export const Formulario = () => {
               {
                 Equipos.map(item => (
                   <li className="list-group-item" key={item.id}>
-                    <span className="lead">{item.MarcaTorre}</span>    
+                    <span className="lead"><b>Torre:</b>{item.MarcaTorre} <b>Monitor:</b>{item.MarcaMonitor} <b>Teclado:</b>{item.MarcaTeclado} <b>Mouse:</b>{item.MarcaMouse} </span>    
                         <button 
                           className='btn btn-danger btn-sm float-end mx-2'
                           onClick={() => EliminarEquipos(item.id)}>Eliminar</button>
