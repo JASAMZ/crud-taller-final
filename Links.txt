@@ -1,0 +1,10 @@
+Taller Final
+
+Jainer Samper
+
+Links:
+
+Netlify:https://distracted-archimedes-eaa0d6.netlify.app/
+Amplify:https://main.d3qfzregwan3xi.amplifyapp.com/
+Dominio:https://www.jainersamper.online/
+GitHub: https://github.com/JASAMZ/crud-taller-final
