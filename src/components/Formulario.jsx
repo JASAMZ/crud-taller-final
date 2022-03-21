@@ -1,7 +1,7 @@
 
 import {nanoid} from 'nanoid'
 import React from 'react';
-import { fire } from '../firebase';
+//import { fire } from '../firebase';
 
 export const Formulario = () => {
 
