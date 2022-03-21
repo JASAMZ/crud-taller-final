@@ -1,4 +1,3 @@
-import { specialCharMap } from '@testing-library/user-event/dist/keyboard';
 import React from 'react';
 import { firebase } from '../firebaseconfi';
 
